@@ -38,6 +38,12 @@ type RequestOptions = {
   locale?: string
 }
 
+function withLocale(path: string, locale?: string): string {
+  if (locale === undefined) return path
+
+  return `${path}${path.includes('?') ? '&' : '?'}locale=${encodeURIComponent(locale)}`
+}
+
 export async function api<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const method = options.method ?? 'GET'
   const mutating = method !== 'GET'
@@ -47,7 +53,7 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   const send = (): Promise<Response> => {
     const token = readCookie('XSRF-TOKEN')
 
-    return fetch(`${BASE}/api/v1${path}`, {
+    return fetch(`${BASE}/api/v1${withLocale(path, options.locale)}`, {
       method,
       credentials: 'include',
       headers: {

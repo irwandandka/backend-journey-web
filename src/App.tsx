@@ -1,77 +1,95 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { AppShell } from './components/AppShell'
+import { useToast } from './components/Toast'
 import { ApiError } from './lib/api'
-import { auth } from './lib/auth'
-import type { User } from './lib/types'
+import { useApp } from './lib/app-state'
+import { learning } from './lib/learning'
+import { Home } from './screens/Home'
+import { Login } from './screens/Login'
+import { Roadmap } from './screens/Roadmap'
+import { Session } from './screens/Session'
+import { TrackDetail } from './screens/TrackDetail'
+import type { ReviewSummary } from './lib/types'
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null)
-  const [booting, setBooting] = useState(true)
-  const [email, setEmail] = useState('learner@backendjourney.test')
-  const [password, setPassword] = useState('password123')
-  const [error, setError] = useState<string | null>(null)
-  const [busy, setBusy] = useState(false)
+  const { user, booting, locale, t } = useApp()
+  const [summary, setSummary] = useState<ReviewSummary | null>(null)
 
-  useEffect(() => {
-    auth
-      .me()
-      .then(setUser)
-      .catch(() => setUser(null))
-      .finally(() => setBooting(false))
-  }, [])
+  const refreshSummary = useCallback(() => {
+    if (user === null) return
 
-  async function submit(event: React.FormEvent) {
-    event.preventDefault()
-    setBusy(true)
-    setError(null)
+    learning
+      .reviewSummary(locale)
+      .then(setSummary)
+      .catch(() => setSummary(null))
+  }, [user, locale])
 
-    try {
-      setUser(await auth.login(email, password))
-    } catch (cause) {
-      setError(
-        cause instanceof ApiError
-          ? (cause.firstError('email') ?? cause.message)
-          : 'Could not reach the API',
-      )
-    } finally {
-      setBusy(false)
-    }
-  }
+  useEffect(refreshSummary, [refreshSummary])
 
-  async function signOut() {
-    await auth.logout()
-    setUser(null)
-  }
-
-  if (booting) return <main className="shell">Loading…</main>
-
-  if (user === null) {
+  if (booting) {
     return (
-      <main className="shell">
-        <h1>Backend Journey</h1>
-        <p className="muted">Sign in to continue your roadmap.</p>
-        <form onSubmit={submit}>
-          <label htmlFor="email">Email</label>
-          <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <label htmlFor="password">Password</label>
-          <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          {error !== null && <p className="error">{error}</p>}
-          <button type="submit" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
-        </form>
-      </main>
+      <div className="shell">
+        <p className="sub">{t.loading}</p>
+      </div>
     )
   }
 
+  if (user === null) return <Login />
+
   return (
-    <main className="shell">
-      <h1>Hi, {user.name}</h1>
-      <dl>
-        <dt>Email</dt><dd>{user.email}</dd>
-        <dt>Locale</dt><dd>{user.locale}</dd>
-        <dt>XP</dt><dd>{user.xpTotal}</dd>
-        <dt>Streak</dt><dd>{user.currentStreak} days</dd>
-        <dt>Roles</dt><dd>{user.roles.join(', ')}</dd>
-      </dl>
-      <button type="button" onClick={signOut}>Sign out</button>
-    </main>
+    <Routes>
+      <Route element={<AppShell dueCount={summary?.dueCount ?? 0} />}>
+        <Route index element={<ReviewLauncher summary={summary} onChanged={refreshSummary} />} />
+        <Route path="roadmap" element={<Roadmap />} />
+        <Route path="tracks/:slug" element={<TrackDetail />} />
+        <Route path="review" element={<ReviewLauncher summary={summary} onChanged={refreshSummary} autoStart />} />
+        <Route path="session/:attemptId" element={<Session />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  )
+}
+
+function ReviewLauncher({
+  summary,
+  onChanged,
+  autoStart = false,
+}: {
+  summary: ReviewSummary | null
+  onChanged: () => void
+  autoStart?: boolean
+}) {
+  const { locale, t } = useApp()
+  const navigate = useNavigate()
+  const toast = useToast()
+  const [starting, setStarting] = useState(false)
+
+  const start = useCallback(async () => {
+    setStarting(true)
+
+    try {
+      const attempt = await learning.startReview(locale)
+
+      navigate(`/session/${attempt.id}`, {
+        state: { hue: 'var(--grad-2)', title: t.reviewSession, backTo: '/' },
+      })
+    } catch (cause) {
+      toast.show(cause instanceof ApiError ? (cause.firstError('review') ?? cause.message) : t.unreachable)
+      onChanged()
+    } finally {
+      setStarting(false)
+    }
+  }, [locale, navigate, onChanged, t.reviewSession, t.unreachable, toast])
+
+  useEffect(() => {
+    if (autoStart && summary !== null && summary.dueCount > 0) void start()
+  }, [autoStart, summary, start])
+
+  return (
+    <>
+      <Home summary={summary} starting={starting} onStartReview={() => void start()} />
+      {toast.node}
+    </>
   )
 }
