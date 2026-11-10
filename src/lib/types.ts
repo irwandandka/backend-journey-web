@@ -1,115 +1,48 @@
+// The App.Data.* shapes come from src/types/api.d.ts, generated out of the
+// Laravel Data DTOs. Run `npm run sync:types` after changing a DTO.
+
 export type Locale = 'en' | 'id'
-
-export type User = {
-  id: number
-  name: string
-  email: string
-  locale: Locale
-  xpTotal: number
-  currentStreak: number
-  longestStreak: number
-  lastActiveOn: string | null
-  roles: string[]
-}
-
 export type Tier = 'foundation' | 'intermediate' | 'advanced' | 'deep'
-
 export type JourneyStatus = 'locked' | 'available' | 'in_progress' | 'completed'
+export type AttemptKind = 'quiz' | 'review'
+export type AttemptStatus = 'in_progress' | 'submitted' | 'abandoned'
 
-export type TrackSummary = {
-  slug: string
-  name: string
-  description: string | null
-  abbreviation: string
-  colorDark: string
-  colorLight: string
-  position: number
-  journeyCount: number
-  completedCount: number
-  dueCount: number
-}
+// PHP has no enum for these yet, so the generated type says `string`. Narrowing
+// through Omit keeps the rest of the shape generated. If the API renames or drops
+// a narrowed field, M holds a key T does not, and the result collapses to an
+// error type so every use site fails to compile.
+type Unknown<T, M> = Exclude<keyof M, keyof T>
 
-export type Roadmap = {
-  slug: string
-  title: string
-  description: string | null
-  tracks: TrackSummary[]
-}
+type Narrow<T, M> = [Unknown<T, M>] extends [never]
+  ? Omit<T, keyof M> & M
+  : { 'narrowed a field the API does not send': Unknown<T, M> }
 
-export type Journey = {
-  slug: string
-  title: string
-  description: string | null
-  tier: Tier
-  position: number
-  status: JourneyStatus
-  bestScore: number | null
-  attemptsCount: number
-  passThreshold: number
-  quizSlug: string | null
-  questionCount: number
-}
+export type User = Narrow<App.Data.UserData, { locale: Locale }>
 
-export type TrackDetail = {
-  slug: string
-  name: string
-  description: string | null
-  abbreviation: string
-  colorDark: string
-  colorLight: string
-  journeys: Journey[]
-}
+export type TrackSummary = App.Data.TrackSummaryData
 
-export type Attempt = {
-  id: number
-  kind: 'quiz' | 'review'
-  quizSlug: string | null
-  status: 'in_progress' | 'submitted' | 'abandoned'
-  locale: Locale
-  questionCount: number
-  answeredCount: number
-  startedAt: string
-}
+export type Roadmap = App.Data.RoadmapData
 
-export type ServedOption = { id: number; label: string }
+export type Journey = Narrow<App.Data.JourneyData, { tier: Tier; status: JourneyStatus }>
 
-export type ServedQuestion = {
-  position: number
-  stem: string
-  codeSnippet: string | null
-  codeLanguage: string | null
-  answered: boolean
-  options: ServedOption[]
-}
+export type TrackDetail = Narrow<App.Data.TrackDetailData, { journeys: Journey[] }>
 
-export type AnswerResult = {
-  position: number
-  isCorrect: boolean
-  correctOptionIds: number[]
-  explanation: string | null
-  optionExplanations: Record<string, string>
-  xpAwarded: number
-  answeredCount: number
-  questionCount: number
-}
+export type Attempt = Narrow<
+  App.Data.AttemptData,
+  { kind: AttemptKind; status: AttemptStatus; locale: Locale }
+>
 
-export type AttemptResult = {
-  score: number
-  correctCount: number
-  questionCount: number
-  passed: boolean
-  xpEarned: number
-  xpTotal: number
-  currentStreak: number
-  journeyStatus: JourneyStatus | null
-  scheduledForReview: { position: number; stem: string; dueAt: string }[]
-}
+export type ServedQuestion = App.Data.ServedQuestionData
 
-export type ReviewSummary = {
-  dueCount: number
-  trackedCount: number
-  nextDueAt: string | null
-  sessionSize: number
-}
+export type ServedOption = ServedQuestion['options'][number]
+
+export type AnswerResult = App.Data.AnswerResultData
+
+export type AttemptResult = Narrow<
+  App.Data.AttemptResultData,
+  { journeyStatus: JourneyStatus | null }
+>
+
+export type ReviewSummary = App.Data.ReviewSummaryData
 
 export type Envelope<T> = { data: T }

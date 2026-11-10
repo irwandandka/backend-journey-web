@@ -203,8 +203,8 @@ export function Session() {
                 <span className="ltr">{LETTERS[position] ?? position + 1}</span>
                 <span className="body">
                   <Markdown source={option.label} />
-                  {revealed && (isRight || isPicked) && result.optionExplanations[String(option.id)] !== undefined && (
-                    <Markdown as="span" source={result.optionExplanations[String(option.id)]} />
+                  {revealed && (isRight || isPicked) && result.optionExplanations[option.id] !== undefined && (
+                    <Markdown as="span" source={result.optionExplanations[option.id]} />
                   )}
                 </span>
               </button>
