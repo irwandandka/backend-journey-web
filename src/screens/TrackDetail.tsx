@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { CheckIcon, LockIcon, PlayIcon } from '../components/Icons'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useToast } from '../components/Toast'
+import { Trail } from '../components/Trail'
 import { ApiError } from '../lib/api'
 import { useApp } from '../lib/app-state'
 import { learning } from '../lib/learning'
@@ -13,6 +13,7 @@ export function TrackDetail() {
   const { slug = '' } = useParams()
   const { locale, isLight, t } = useApp()
   const navigate = useNavigate()
+  const { state } = useLocation()
   const toast = useToast()
   const [track, setTrack] = useState<TrackModel | null>(null)
   const [failed, setFailed] = useState(false)
@@ -31,6 +32,17 @@ export function TrackDetail() {
       live = false
     }
   }, [slug, locale])
+
+  const focus = typeof state === 'object' && state !== null && 'focus' in state ? String(state.focus) : null
+
+  useEffect(() => {
+    if (track === null || focus === null) return
+
+    const node = document.querySelector(`[data-journey="${CSS.escape(focus)}"]`)
+
+    node?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    ;(node as HTMLElement | null)?.focus({ preventScroll: true })
+  }, [track, focus])
 
   const hue = track === null ? 'var(--grad-1)' : isLight ? track.colorLight : track.colorDark
 
@@ -97,32 +109,13 @@ export function TrackDetail() {
               <span>{journeys.length} {t.journeys}</span>
             </div>
 
-            <div className="jlist">
-              {journeys.map((journey) => (
-                <button
-                  key={journey.slug}
-                  type="button"
-                  className={`jrow ${journey.status}`}
-                  disabled={journey.status === 'locked' || starting === journey.slug}
-                  onClick={() => open(journey)}
-                >
-                  <span className="orb">
-                    {journey.status === 'completed' ? <CheckIcon /> : journey.status === 'locked' ? <LockIcon /> : <PlayIcon />}
-                  </span>
-                  <span className="body">
-                    <strong>{journey.title}</strong>
-                    <span>
-                      {journey.status === 'locked'
-                        ? t.statusLocked
-                        : journey.status === 'completed'
-                          ? `${journey.attemptsCount}× · ${t.statusDone}`
-                          : `${journey.questionCount} ${t.questions}`}
-                    </span>
-                  </span>
-                  {journey.bestScore !== null && <span className="score">{journey.bestScore}%</span>}
-                </button>
-              ))}
-            </div>
+            <Trail
+              journeys={journeys}
+              starting={starting}
+              labels={{ locked: t.statusLocked, done: t.statusDone, questions: t.questions }}
+              focus={focus}
+              onOpen={(journey) => void open(journey)}
+            />
           </section>
         )
       })}

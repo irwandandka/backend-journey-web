@@ -5,6 +5,7 @@ import type {
   Attempt,
   AttemptResult,
   Envelope,
+  JourneySearch,
   Locale,
   ReviewSummary,
   Roadmap,
@@ -16,6 +17,9 @@ const unwrap = <T,>(response: Envelope<T>): T => response.data
 
 export const learning = {
   roadmap: (locale: Locale) => api<Envelope<Roadmap>>('/roadmap', { locale }).then(unwrap),
+
+  journeys: (locale: Locale) =>
+    api<Envelope<JourneySearch[]>>('/journeys', { locale }).then(unwrap),
 
   track: (slug: string, locale: Locale) =>
     api<Envelope<TrackDetail>>(`/tracks/${slug}`, { locale }).then(unwrap),

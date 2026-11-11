@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useApp } from '../lib/app-state'
 import { HomeIcon, MapIcon, ReviewIcon } from './Icons'
+import { Palette } from './Palette'
 
 const THEME_GLYPH = { auto: '◐', light: '☀', dark: '☾' } as const
 
@@ -21,6 +22,8 @@ export function AppShell({ dueCount }: { dueCount: number }) {
             <span className="glyph">◆</span> <span>Backend Journey</span>
           </div>
           <span className="spacer" />
+
+          <Palette />
 
           <button type="button" className="icon-btn" onClick={cycleTheme} title={themeLabel} aria-label={themeLabel}>
             {THEME_GLYPH[theme]}

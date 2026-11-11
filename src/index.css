@@ -231,26 +231,6 @@ h2 .count { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; co
 .tier .hd hr { flex: 1; border: 0; border-top: 1px dashed var(--hair-2); margin: 0; }
 .tier .hd span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--fg-lo); }
 
-.jlist { display: flex; flex-direction: column; gap: 10px; }
-.jrow {
-  display: flex; align-items: center; gap: 13px; width: 100%; text-align: left; padding: 13px 15px;
-  border-radius: 16px; background: var(--glass); border: 1px solid var(--hair); color: inherit;
-  font-family: inherit; cursor: pointer; min-width: 0;
-  transition: transform 0.16s ease, border-color 0.2s ease, background 0.2s ease;
-}
-.jrow:not(:disabled):hover { transform: translateX(4px); background: var(--glass-2); border-color: color-mix(in oklab, var(--hue) 50%, transparent); }
-.jrow:disabled { cursor: not-allowed; }
-.jrow .orb { width: 42px; height: 42px; border-radius: 14px; flex: 0 0 auto; display: grid; place-items: center; background: var(--ink-1); border: 1px solid var(--hair-2); }
-.jrow .orb svg { width: 19px; height: 19px; }
-.jrow.completed .orb { background: linear-gradient(150deg, var(--hue), color-mix(in oklab, var(--hue) 58%, var(--deep))); border-color: transparent; color: var(--on-hue); }
-.jrow.available .orb, .jrow.in_progress .orb { border: 2px solid var(--hue); color: var(--hue); animation: ring 2.1s ease-out infinite; }
-@keyframes ring { 0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--hue) 50%, transparent); } 70%, 100% { box-shadow: 0 0 0 14px transparent; } }
-.jrow.locked { opacity: 0.6; }
-.jrow.locked .orb { background: var(--glass); border-color: var(--hair); color: var(--fg-lo); }
-.jrow .body { flex: 1 1 auto; min-width: 0; }
-.jrow .body strong { display: block; font-family: var(--display); font-weight: 600; font-size: 14.5px; letter-spacing: -0.015em; }
-.jrow .body span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-lo); }
-.jrow .score { font-family: var(--display); font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; color: var(--hue); flex: 0 0 auto; }
 
 .quizbar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-block: 12px; margin-bottom: 4px; background: linear-gradient(180deg, var(--fade) 64%, transparent); backdrop-filter: blur(10px); }
 .tbadge { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 500; background: color-mix(in oklab, var(--hue) 15%, transparent); border: 1px solid color-mix(in oklab, var(--hue) 45%, transparent); color: var(--hue); min-width: 0; }
@@ -395,3 +375,119 @@ input { padding: 0.65rem 0.75rem; border-radius: 0.7rem; border: 1px solid var(-
 @media (prefers-reduced-motion: reduce) {
   .unlocks li { animation: none; }
 }
+
+/* Shiki emits both themes as CSS variables; the active one is selected here so
+   switching theme never re-highlights. */
+.code { margin: 0 0 20px; padding: 14px 16px; border-radius: 14px; overflow-x: auto; background: var(--code-bg); border: 1px solid var(--hair); border-left: 2px solid var(--hue); font-family: var(--mono); font-size: 12.5px; line-height: 1.72; color: var(--code-fg); }
+.code pre { margin: 0; padding: 0; border: 0; border-radius: 0; background: none; overflow: visible; font: inherit; }
+.code code { font: inherit; background: none; padding: 0; }
+.shiki-host span { color: var(--bj-dark, inherit); }
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) .shiki-host span { color: var(--bj-light, inherit); }
+}
+
+:root[data-theme='light'] .shiki-host span { color: var(--bj-light, inherit); }
+
+/* The serpentine trail. Nodes are positioned from measured pixels, so the SVG
+   connector lines up at any width. */
+.trail { position: relative; margin: 2px 0 6px; }
+.trailpath { position: absolute; inset: 0; pointer-events: none; }
+.trailpath path { fill: none; stroke: var(--hair-2); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 7 7; }
+.trailpath path.done { stroke: var(--hue); stroke-dasharray: none; opacity: 0.85; }
+
+.node {
+  position: absolute; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  width: 168px; padding: 0; border: 0; background: none; color: inherit;
+  font: inherit; cursor: pointer; text-align: center;
+}
+.node:disabled { cursor: not-allowed; }
+.node .orb {
+  position: relative; width: 52px; height: 52px; border-radius: 18px;
+  display: grid; place-items: center; flex: 0 0 auto;
+  background: var(--ink-1); border: 1px solid var(--hair-2);
+  transition: transform 180ms cubic-bezier(.2,.9,.3,1), box-shadow 180ms ease, border-color 180ms ease;
+}
+.node .orb svg { width: 21px; height: 21px; }
+.node .orb em {
+  position: absolute; right: -7px; bottom: -7px;
+  font-style: normal; font-family: var(--mono); font-size: 9.5px; font-variant-numeric: tabular-nums;
+  padding: 1px 5px; border-radius: 999px; background: var(--ink-0); border: 1px solid var(--hair-2); color: var(--fg-mid);
+}
+.node .label strong { display: block; font-family: var(--display); font-weight: 600; font-size: 13.5px; line-height: 1.3; letter-spacing: -0.015em; }
+.node .label span { display: block; font-size: 11.5px; color: var(--fg-lo); margin-top: 2px; }
+
+.node.available .orb, .node.in_progress .orb {
+  background: linear-gradient(140deg, color-mix(in oklab, var(--hue) 26%, var(--ink-1)), var(--ink-1));
+  border-color: color-mix(in oklab, var(--hue) 62%, transparent);
+  color: var(--hue);
+}
+.node.in_progress .orb { animation: pulse-hue 2.8s ease-in-out infinite; }
+.node.completed .orb { background: color-mix(in oklab, var(--ok) 20%, var(--ink-1)); border-color: color-mix(in oklab, var(--ok) 55%, transparent); color: var(--ok-txt); }
+.node.locked .orb { color: var(--fg-lo); }
+.node.locked .label strong { color: var(--fg-mid); }
+.node.locked { opacity: 0.66; }
+
+@keyframes pulse-hue {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--hue) 48%, transparent); }
+  55% { box-shadow: 0 0 0 12px transparent; }
+}
+
+.node:not(:disabled):hover .orb { transform: translateY(-3px) scale(1.04); box-shadow: 0 16px 34px -16px color-mix(in oklab, var(--hue) 80%, transparent); }
+.node:focus-visible { outline: none; }
+.node:focus-visible .orb { outline: 2px solid var(--hue); outline-offset: 3px; }
+
+@media (max-width: 480px) {
+  .node { width: 132px; }
+  .node .label strong { font-size: 12.5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .node.in_progress .orb { animation: none; }
+  .node:not(:disabled):hover .orb { transform: none; }
+}
+
+/* Command palette */
+.palette-back {
+  position: fixed; inset: 0; z-index: 60;
+  background: color-mix(in oklab, var(--ink-0) 72%, transparent);
+  backdrop-filter: blur(5px);
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: max(12vh, 60px) 16px 16px;
+}
+.palette {
+  width: min(560px, 100%);
+  background: var(--ink-1); border: 1px solid var(--hair-2); border-radius: 18px;
+  box-shadow: 0 34px 80px -30px var(--shadow);
+  overflow: hidden;
+}
+.palette input {
+  width: 100%; padding: 15px 18px; border: 0; border-bottom: 1px solid var(--hair);
+  background: none; color: var(--fg-hi); font-family: var(--body); font-size: 15px;
+}
+.palette input:focus { outline: none; }
+.palette input::placeholder { color: var(--fg-lo); }
+.palette ul { list-style: none; margin: 0; padding: 6px; max-height: 48vh; overflow-y: auto; }
+.palette li + li { margin-top: 2px; }
+.palette li button {
+  display: flex; align-items: center; gap: 9px; width: 100%; text-align: left;
+  padding: 9px 12px; border: 0; border-radius: 12px; background: none; color: inherit;
+  font: inherit; cursor: pointer;
+}
+.palette li button.on { background: var(--glass-2); }
+.palette li button .txt { flex: 1 1 auto; min-width: 0; }
+.palette li button .txt strong { display: block; font-family: var(--display); font-weight: 600; font-size: 14px; letter-spacing: -0.015em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.palette li button .txt span { display: block; font-size: 11.5px; color: var(--fg-lo); }
+.palette .pill {
+  flex: 0 0 auto; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 999px; border: 1px solid var(--hair-2); color: var(--fg-mid);
+}
+.palette .pill.none { color: var(--bad-txt); border-color: color-mix(in oklab, var(--bad) 42%, transparent); }
+.palette-empty { padding: 22px 18px; color: var(--fg-lo); font-size: 13.5px; text-align: center; }
+.palette-hint {
+  padding: 9px 14px; border-top: 1px solid var(--hair);
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.09em; color: var(--fg-lo); text-align: center;
+}
+
+.node.focused .orb { outline: 2px solid var(--hue); outline-offset: 3px; }

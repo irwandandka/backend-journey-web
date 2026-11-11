@@ -56,6 +56,15 @@ passThreshold: number,
 quizSlug: string | null,
 questionCount: number,
 };
+export type JourneySearchData = {
+slug: string,
+title: string,
+trackSlug: string,
+trackName: string,
+tier: string,
+position: number,
+hasQuiz: boolean,
+};
 export type LoginData = {
 email: string,
 password: string,
@@ -127,6 +136,143 @@ longestStreak: number,
 lastActiveOn: string | null,
 roles: string[],
 };
+namespace Admin {
+export type JourneyInputData = {
+slug: string,
+trackSlug: string,
+tier: string,
+unlockRule: string,
+position: number,
+passThreshold: number,
+isPublished: boolean,
+translations: Record<string, { title: string; description?: string | null }>,
+};
+export type OverviewData = {
+tracks: {
+total: number,
+published: number,
+},
+journeys: {
+total: number,
+published: number,
+withoutQuiz: number,
+},
+quizzes: {
+total: number,
+},
+questions: {
+total: number,
+active: number,
+withoutVersion: number,
+},
+translationCoverage: {
+locale: string,
+translated: number,
+total: number,
+}[],
+emptyJourneys: {
+slug: string,
+trackSlug: string,
+position: number,
+tier: string,
+}[],
+};
+export type QuestionDetailData = {
+key: string,
+trackSlug: string,
+type: string,
+difficulty: string,
+isActive: boolean,
+codeLanguage: string | null,
+version: number,
+quizCount: number,
+tags: string[],
+translations: Record<string, {
+stemMd: string,
+explanationMd: string | null,
+codeSnippet: string | null,
+}>,
+options: {
+isCorrect: boolean,
+translations: Record<string, {
+labelMd: string,
+optionExplanationMd: string | null,
+}>,
+}[],
+history: {
+version: number,
+servedCount: number,
+isCurrent: boolean,
+}[],
+};
+export type QuestionInputData = {
+key: string,
+trackSlug: string,
+type: string,
+difficulty: string,
+translations: Record<string, { stemMd: string; explanationMd?: string | null; codeSnippet?: string | null }>,
+options: Array<{ isCorrect: boolean; translations: Record<string, { labelMd: string; optionExplanationMd?: string | null }> }>,
+tags: string[],
+isActive: boolean,
+codeLanguage: string | null,
+};
+export type QuestionSummaryData = {
+key: string,
+trackSlug: string,
+type: string,
+difficulty: string,
+isActive: boolean,
+version: number,
+optionCount: number,
+quizCount: number,
+stem: string,
+tags: string[],
+missingLocales: string[],
+updatedAt: string | null,
+};
+export type QuizInputData = {
+slug: string,
+journeySlug: string,
+questionCount: number,
+shuffleQuestions: boolean,
+shuffleOptions: boolean,
+position: number,
+timeLimitS: number | null,
+translations: Record<string, { title: string }>,
+};
+export type TrackInputData = {
+slug: string,
+abbreviation: string,
+colorDark: string,
+colorLight: string,
+position: number,
+isPublished: boolean,
+translations: Record<string, { name: string; description?: string | null }>,
+};
+export type TrackTreeData = {
+slug: string,
+name: string,
+abbreviation: string,
+colorDark: string,
+colorLight: string,
+position: number,
+isPublished: boolean,
+questionCount: number,
+journeys: {
+slug: string,
+title: string,
+tier: string,
+unlockRule: string,
+position: number,
+isPublished: boolean,
+passThreshold: number,
+quizzes: {
+slug: string,
+questionCount: number,
+}[],
+}[],
+};
+}
 }
 }
 declare namespace Illuminate {

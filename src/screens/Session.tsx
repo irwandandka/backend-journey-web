@@ -1,6 +1,7 @@
 import confetti from 'canvas-confetti'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { CodeBlock } from '../components/CodeBlock'
 import { Markdown } from '../components/Markdown'
 import { ApiError } from '../lib/api'
 import { auth } from '../lib/auth'
@@ -177,7 +178,7 @@ export function Session() {
         <Markdown as="p" source={current.stem} />
 
         {current.codeSnippet !== null && (
-          <pre><code>{current.codeSnippet}</code></pre>
+          <CodeBlock code={current.codeSnippet} language={current.codeLanguage} />
         )}
 
         <div className="opts">
