@@ -6,6 +6,7 @@ import { ApiError } from './lib/api'
 import { useApp } from './lib/app-state'
 import { learning } from './lib/learning'
 import { Home } from './screens/Home'
+import { Insights } from './screens/Insights'
 import { Login } from './screens/Login'
 import { Roadmap } from './screens/Roadmap'
 import { Session } from './screens/Session'
@@ -48,6 +49,7 @@ export default function App() {
       <Route element={<AppShell dueCount={summary?.dueCount ?? 0} />}>
         <Route index element={<ReviewLauncher summary={summary} achievements={achievements} onChanged={refreshSummary} />} />
         <Route path="roadmap" element={<Roadmap />} />
+        <Route path="insights" element={<Insights />} />
         <Route path="tracks/:slug" element={<TrackDetail />} />
         <Route
           path="review"

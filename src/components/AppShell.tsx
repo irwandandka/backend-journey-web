@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useApp } from '../lib/app-state'
-import { HomeIcon, MapIcon, ReviewIcon } from './Icons'
+import { ChartIcon, HomeIcon, MapIcon, ReviewIcon } from './Icons'
 import { Palette } from './Palette'
 
 const THEME_GLYPH = { auto: '◐', light: '☀', dark: '☾' } as const
@@ -56,6 +56,10 @@ export function AppShell({ dueCount }: { dueCount: number }) {
           <ReviewIcon />
           <span>{t.navReview}</span>
           {dueCount > 0 && <span className="dot">{dueCount}</span>}
+        </NavLink>
+        <NavLink to="/insights">
+          <ChartIcon />
+          <span>{t.navInsights}</span>
         </NavLink>
       </nav>
     </>

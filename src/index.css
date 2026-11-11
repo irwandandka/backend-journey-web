@@ -491,3 +491,33 @@ input { padding: 0.65rem 0.75rem; border-radius: 0.7rem; border: 1px solid var(-
 }
 
 .node.focused .orb { outline: 2px solid var(--hue); outline-offset: 3px; }
+
+/* Insights */
+.bar-row { background: var(--glass); border: 1px solid var(--hair); border-radius: 14px; padding: 11px 13px; }
+.bar-row .top { display: flex; align-items: baseline; gap: 9px; margin-bottom: 8px; }
+.bar-row .top strong { font-family: var(--display); font-weight: 600; font-size: 13.5px; letter-spacing: -0.015em; }
+.bar-row .top .grow { flex: 1; }
+.bar-row .top em { font-style: normal; font-family: var(--display); font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; }
+.bar-row .top .n { font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; color: var(--fg-lo); }
+.bar-row .meter { height: 7px; border-radius: 99px; background: color-mix(in oklab, var(--fg-lo) 24%, transparent); overflow: hidden; }
+.bar-row .meter i { display: block; height: 100%; border-radius: 99px; transition: width 500ms cubic-bezier(.3,.9,.3,1); }
+
+.hard-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  padding: 11px 13px; border-radius: 14px; background: var(--glass);
+  border: 1px solid color-mix(in oklab, var(--bad) 30%, var(--hair)); color: inherit;
+  font: inherit; cursor: pointer; transition: transform .16s ease, border-color .2s ease;
+}
+.hard-row:hover { transform: translateX(3px); border-color: color-mix(in oklab, var(--bad) 55%, transparent); }
+.hard-row .count {
+  flex: 0 0 auto; width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center;
+  font-family: var(--display); font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums;
+  background: color-mix(in oklab, var(--bad) 16%, transparent); color: var(--bad-txt);
+}
+.hard-row .body { flex: 1 1 auto; min-width: 0; font-size: 13px; line-height: 1.45; }
+.hard-row .meta { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.07em; color: var(--fg-lo); margin-top: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bar-row .meter i { transition: none; }
+  .hard-row:hover { transform: none; }
+}

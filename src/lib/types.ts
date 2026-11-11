@@ -47,6 +47,8 @@ export type Achievement = App.Data.AchievementData
 
 export type ReviewSummary = App.Data.ReviewSummaryData
 
+export type Insight = App.Data.InsightData
+
 export type JourneySearch = Narrow<App.Data.JourneySearchData, { tier: Tier }>
 
 export type Envelope<T> = { data: T }
