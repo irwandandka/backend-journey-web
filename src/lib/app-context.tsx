@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { setUnauthorizedHandler } from './api'
 import { AppContext, THEME_ORDER, type AppState, type ThemeChoice } from './app-state'
 import { auth } from './auth'
 import { stringsFor } from './strings'
@@ -27,6 +28,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<ThemeChoice>(
     () => (THEME_ORDER.find((candidate) => candidate === read('bj-theme')) ?? 'auto'),
   )
+
+  useEffect(() => {
+    setUnauthorizedHandler(() => setUser(null))
+
+    return () => setUnauthorizedHandler(null)
+  }, [])
 
   useEffect(() => {
     auth
