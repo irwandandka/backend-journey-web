@@ -10,11 +10,12 @@ import { Login } from './screens/Login'
 import { Roadmap } from './screens/Roadmap'
 import { Session } from './screens/Session'
 import { TrackDetail } from './screens/TrackDetail'
-import type { ReviewSummary } from './lib/types'
+import type { Achievement, ReviewSummary } from './lib/types'
 
 export default function App() {
   const { user, booting, locale, t } = useApp()
   const [summary, setSummary] = useState<ReviewSummary | null>(null)
+  const [achievements, setAchievements] = useState<Achievement[]>([])
 
   const refreshSummary = useCallback(() => {
     if (user === null) return
@@ -23,6 +24,11 @@ export default function App() {
       .reviewSummary(locale)
       .then(setSummary)
       .catch(() => setSummary(null))
+
+    learning
+      .achievements(locale)
+      .then(setAchievements)
+      .catch(() => setAchievements([]))
   }, [user, locale])
 
   useEffect(refreshSummary, [refreshSummary])
@@ -40,10 +46,20 @@ export default function App() {
   return (
     <Routes>
       <Route element={<AppShell dueCount={summary?.dueCount ?? 0} />}>
-        <Route index element={<ReviewLauncher summary={summary} onChanged={refreshSummary} />} />
+        <Route index element={<ReviewLauncher summary={summary} achievements={achievements} onChanged={refreshSummary} />} />
         <Route path="roadmap" element={<Roadmap />} />
         <Route path="tracks/:slug" element={<TrackDetail />} />
-        <Route path="review" element={<ReviewLauncher summary={summary} onChanged={refreshSummary} autoStart />} />
+        <Route
+          path="review"
+          element={
+            <ReviewLauncher
+              summary={summary}
+              achievements={achievements}
+              onChanged={refreshSummary}
+              autoStart
+            />
+          }
+        />
         <Route path="session/:attemptId" element={<Session />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
@@ -53,10 +69,12 @@ export default function App() {
 
 function ReviewLauncher({
   summary,
+  achievements,
   onChanged,
   autoStart = false,
 }: {
   summary: ReviewSummary | null
+  achievements: Achievement[]
   onChanged: () => void
   autoStart?: boolean
 }) {
@@ -88,7 +106,12 @@ function ReviewLauncher({
 
   return (
     <>
-      <Home summary={summary} starting={starting} onStartReview={() => void start()} />
+      <Home
+        summary={summary}
+        achievements={achievements}
+        starting={starting}
+        onStartReview={() => void start()}
+      />
       {toast.node}
     </>
   )

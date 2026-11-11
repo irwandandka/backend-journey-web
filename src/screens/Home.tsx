@@ -1,14 +1,16 @@
 import { useNavigate } from 'react-router-dom'
+import { Badges } from '../components/Badges'
 import { useApp } from '../lib/app-state'
-import type { ReviewSummary } from '../lib/types'
+import type { Achievement, ReviewSummary } from '../lib/types'
 
 type Props = {
   summary: ReviewSummary | null
+  achievements: Achievement[]
   starting: boolean
   onStartReview: () => void
 }
 
-export function Home({ summary, starting, onStartReview }: Props) {
+export function Home({ summary, achievements, starting, onStartReview }: Props) {
   const { user, t, locale } = useApp()
   const navigate = useNavigate()
 
@@ -63,6 +65,8 @@ export function Home({ summary, starting, onStartReview }: Props) {
           </div>
         </div>
       )}
+
+      <Badges items={achievements} />
     </>
   )
 }

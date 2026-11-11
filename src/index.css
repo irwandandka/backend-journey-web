@@ -360,3 +360,38 @@ input { padding: 0.65rem 0.75rem; border-radius: 0.7rem; border: 1px solid var(-
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }
 :focus-visible { outline: 2px solid var(--grad-2); outline-offset: 3px; border-radius: 10px; }
+
+.badges { margin-top: 26px; }
+.badges .hd { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.badges .hd h3 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
+.badges .hd hr { flex: 1; border: 0; border-top: 1px dashed var(--hair-2); margin: 0; }
+.badges .hd span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--fg-lo); font-variant-numeric: tabular-nums; }
+.badges ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(216px, 1fr)); gap: 10px; }
+.badge { display: flex; align-items: center; gap: 12px; padding: 12px 13px; border-radius: 15px; background: var(--glass); border: 1px solid color-mix(in oklab, var(--flame) 34%, transparent); min-width: 0; }
+.badge i { width: 36px; height: 36px; flex: 0 0 auto; border-radius: 12px; display: grid; place-items: center; font-style: normal; font-size: 16px; background: color-mix(in oklab, var(--flame) 18%, transparent); color: var(--flame); }
+.badge div { min-width: 0; }
+.badge strong { display: block; font-family: var(--display); font-weight: 600; font-size: 13.5px; letter-spacing: -0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badge span { display: block; font-size: 11.5px; color: var(--fg-mid); line-height: 1.35; }
+.badge.locked { border-color: var(--hair); }
+.badge.locked i { background: color-mix(in oklab, var(--fg-lo) 20%, transparent); color: var(--fg-lo); }
+.badge.locked strong { color: var(--fg-mid); }
+.badge.locked span { color: var(--fg-lo); }
+
+.unlocks { margin: 20px 0 4px; padding: 14px; border-radius: 17px; text-align: left; background: color-mix(in oklab, var(--flame) 11%, transparent); border: 1px solid color-mix(in oklab, var(--flame) 40%, transparent); }
+.unlocks h3 { margin: 0 0 10px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--flame); }
+.unlocks ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.unlocks li { display: flex; align-items: center; gap: 11px; min-width: 0; animation: pop 520ms cubic-bezier(.2,.9,.3,1) both; }
+.unlocks li:nth-child(2) { animation-delay: 110ms; }
+.unlocks li:nth-child(3) { animation-delay: 220ms; }
+.unlocks i { width: 34px; height: 34px; flex: 0 0 auto; border-radius: 11px; display: grid; place-items: center; font-style: normal; font-size: 15px; background: var(--flame); color: var(--on-hue); }
+.unlocks strong { display: block; font-family: var(--display); font-weight: 600; font-size: 13.5px; }
+.unlocks span { display: block; font-size: 11.5px; color: var(--fg-mid); line-height: 1.35; }
+
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.9) translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .unlocks li { animation: none; }
+}

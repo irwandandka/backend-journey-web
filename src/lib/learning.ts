@@ -1,5 +1,6 @@
 import { api } from './api'
 import type {
+  Achievement,
   AnswerResult,
   Attempt,
   AttemptResult,
@@ -18,6 +19,9 @@ export const learning = {
 
   track: (slug: string, locale: Locale) =>
     api<Envelope<TrackDetail>>(`/tracks/${slug}`, { locale }).then(unwrap),
+
+  achievements: (locale: Locale) =>
+    api<Envelope<Achievement[]>>('/achievements', { locale }).then(unwrap),
 
   reviewSummary: (locale: Locale) =>
     api<Envelope<ReviewSummary>>('/review', { locale }).then(unwrap),

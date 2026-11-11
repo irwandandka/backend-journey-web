@@ -5,6 +5,7 @@ import { Markdown } from '../components/Markdown'
 import { ApiError } from '../lib/api'
 import { auth } from '../lib/auth'
 import { useApp } from '../lib/app-state'
+import { glyphFor } from '../lib/badges'
 import { learning } from '../lib/learning'
 import type { AnswerResult, AttemptResult, ServedQuestion } from '../lib/types'
 
@@ -273,6 +274,23 @@ function Result({ outcome, hue, onDone }: { outcome: AttemptResult; hue: string;
         <span className="chip flame">▲ {t.streakNow(outcome.currentStreak)}</span>
         <span className="chip">{t.accuracy} <b>{outcome.score}%</b></span>
       </div>
+
+      {outcome.unlockedAchievements.length > 0 && (
+        <div className="unlocks">
+          <h3>★ {t.unlockedHeading(outcome.unlockedAchievements.length)}</h3>
+          <ul>
+            {outcome.unlockedAchievements.map((badge) => (
+              <li key={badge.slug}>
+                <i aria-hidden="true">{glyphFor(badge.icon)}</i>
+                <div>
+                  <strong>{badge.title}</strong>
+                  {badge.description !== null && <span>{badge.description}</span>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="relist">
         <h3>{outcome.scheduledForReview.length > 0 ? `↻ ${t.queued}` : `✓ ${t.queueEmpty}`}</h3>

@@ -43,6 +43,8 @@ export type AttemptResult = Narrow<
   { journeyStatus: JourneyStatus | null }
 >
 
+export type Achievement = App.Data.AchievementData
+
 export type ReviewSummary = App.Data.ReviewSummaryData
 
 export type Envelope<T> = { data: T }
